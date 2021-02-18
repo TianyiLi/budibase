@@ -8,6 +8,7 @@
   import { DropdownContainer, DropdownItem } from "components/common/Dropdowns"
 
   export let component
+  export let isOnContext
 
   let confirmDeleteDialog
   let dropdown
@@ -17,6 +18,8 @@
     !component ||
     !store.actions.components.getDefinition(component._component)?.hasChildren
   $: noPaste = !$store.componentToPaste
+
+  $: isOnContext && (dropdown.show?.());
 
   const lastPartOfName = c => (c ? last(c._component.split("/")) : "")
 

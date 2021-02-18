@@ -11,10 +11,17 @@
   export let level = 0
   export let dragDropStore
 
+  let contextClickIndex = -1
+
   const isScreenslot = name => name?.endsWith("screenslot")
 
   const selectComponent = component => {
     store.actions.components.select(component)
+  }
+
+  const keydown = e => {
+    console.log(e);
+
   }
 
   const dragstart = component => e => {
@@ -43,11 +50,19 @@
 
     return false
   }
+
+  const contextIndexSetup = id => {
+    return () => {
+    contextClickIndex = id
+    console.log(id)
+  }}
 </script>
 
 <ul>
   {#each components as component, index (component._id)}
-    <li on:click|stopPropagation={() => selectComponent(component)}>
+    <li on:click|stopPropagation={() => selectComponent(component)}
+        on:keypress={keydown}
+        on:contextmenu|preventDefault|stopPropagation={contextIndexSetup(index)}>
       {#if $dragDropStore?.targetComponent === component && $dragDropStore.dropPosition === DropPosition.ABOVE}
         <div
           on:drop={dragDropStore.actions.drop}
@@ -67,7 +82,7 @@
         withArrow
         indentLevel={level + 1}
         selected={$store.selectedComponentId === component._id}>
-        <ComponentDropdownMenu {component} />
+        <ComponentDropdownMenu {component} isOnContext={contextClickIndex === index} />
       </NavItem>
 
       {#if component._children}
